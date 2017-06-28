@@ -16,7 +16,7 @@ namespace VsUnitTestProject
         }
 
         [TestMethod]
-        [ExpectedExceptionWithMessage(typeof(MyException), "part")]
+        [ExpectedExceptionWithMessage(typeof(MyException), "part", true)]
         public void PartOfText()
         {
             throw new MyException("my part of message");

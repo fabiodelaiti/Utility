@@ -6,18 +6,18 @@ namespace FabioTheLight
     public class ExpectedExceptionWithMessageAttribute : ExpectedExceptionBaseAttribute
     {
         public Type ExceptionType { get; set; }
-
         public string ExpectedMessage { get; set; }
+        public bool JustPartOfMessage { get; private set; }
 
         public ExpectedExceptionWithMessageAttribute(Type exceptionType)
         {
             this.ExceptionType = exceptionType;
         }
 
-        public ExpectedExceptionWithMessageAttribute(Type exceptionType, string expectedMessage)
+        public ExpectedExceptionWithMessageAttribute(Type exceptionType, string expectedMessage, bool justPartOfMessage = false)
         {
             this.ExceptionType = exceptionType;
-
+            this.JustPartOfMessage = justPartOfMessage;
             this.ExpectedMessage = expectedMessage;
         }
 
@@ -34,11 +34,23 @@ namespace FabioTheLight
                             );
             }
 
-            var actualMessage = e.Message;
+            var actualMessage = e.Message.Trim();
 
-            Assert.AreEqual(this.ExpectedMessage, actualMessage);
+            if (this.ExpectedMessage != null)
+            {
+                if (JustPartOfMessage)
+                {
+                    if (!actualMessage.Contains(ExpectedMessage))
+                        Assert.Fail($"Exception message \"{actualMessage}\" does not contain \"{ExpectedMessage}\"");
+                }
+                else
+                {
+                    if (actualMessage != ExpectedMessage)
+                        Assert.Fail($"Expected exception message \"{actualMessage}\" but was \"{ExpectedMessage}\"");
 
-            Console.Write("ExpectedExceptionWithMessageAttribute:" + e.Message);
+                }
+            }
         }
     }
+
 }
